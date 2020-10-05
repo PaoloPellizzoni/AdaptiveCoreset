@@ -16,8 +16,8 @@ public class Main
         PrintWriter writerCor = new PrintWriter("cor.dat");
         PrintWriter writerSeq = new PrintWriter("seq.dat");
         
-        for(int ii=0; ii < 5; ii++){
-            reader = new Power_Reader("power.dat");
+        for(int ii=0; ii < 2; ii++){
+            reader = new Power_Reader("../../data/power.dat");
             wSize = sizesw[ii];
             long startTime, endTime;
             double avgCohr = 0, avgCorr = 0, avgSeqr = 0; //radius
@@ -111,7 +111,6 @@ public class Main
         writerCoh.close();
         writerCor.close();
         writerSeq.close();
-        writerObl.close();
         
         reader.close();
     }
