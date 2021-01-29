@@ -1,3 +1,7 @@
 data
+out
+tmp_files
+imgs
 
 *.class
+*.m

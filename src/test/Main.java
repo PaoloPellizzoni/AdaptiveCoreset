@@ -2,7 +2,7 @@ package src.test;
 
 import src.core.css.*;
 import src.core.coreset.*;
-import src.core.utils.*;	
+import src.core.utils.*;
 
 import java.util.*;
 import java.io.*;
@@ -18,22 +18,24 @@ public class Main
     public static void main(String[] args) throws Exception
     {
 
-        PrintWriter writerCoh = new PrintWriter("test_cover_coh.dat");
-        PrintWriter writerCor = new PrintWriter("test_cover_cor.dat");
-        PrintWriter writerSeq = new PrintWriter("test_cover_seq.dat");
-        PrintWriter writerObl = new PrintWriter("test_cover_obl.dat");
+        PrintWriter writerCoh = new PrintWriter("out/test_cover_coh2.dat");
+        PrintWriter writerCor = new PrintWriter("out/test_cover_cor2.dat");
+        PrintWriter writerSeq = new PrintWriter("out/test_cover_seq2.dat");
+        PrintWriter writerObl = new PrintWriter("out/test_cover_obl2.dat");
 
         for(int ii=0; ii < sizesw.length; ii++){
             reader = new Cover_Reader("data/covtype.dat");
             wSize = sizesw[ii];
             long startTime, endTime;
-
-            CSS coh = new CSS(0.01, wSize, k, 0.1, 20000);
-            Coreset cor = new Coreset(0.1, 0.5, wSize, k, 0.1, 20000);
-            CoresetOblivious obl = new CoresetOblivious(0.1, 0.5, wSize, k);
+            // cover: 0.1 20000
+            // higgs: 0.01 100
+            CSS coh = new CSS(0.01, wSize, k, 0.1, 10000);
+            Coreset cor = new Coreset(0.1, 0.5, wSize, k, 0.1, 10000);
+            CoresetOblivious2 obl = new CoresetOblivious2(0.1, 0.5, wSize, k);
             ArrayList<Point> deb_win = new ArrayList<>();
             for(int tim = 0; tim < wSize+stride ; tim++){
                 Point p = reader.nextPoint();
+                if(tim>=wSize && tim%1000==0) System.out.println(tim);
                 p.exitTime = tim + wSize;
                 //debug window
                 startTime = System.nanoTime();

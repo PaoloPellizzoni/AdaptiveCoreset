@@ -7,25 +7,24 @@ import src.core.utils.*;
 import java.util.*;
 import java.io.*;
 
-public class MainDD
+public class MainDDsq
 {
     static DatasetReader reader;
     static int k = 20;
     static double INF = 10e20;
-    static int wSize = 10000;
+    static int wSize = 100000;
     public static void main(String[] args) throws Exception
     {
-        PrintWriter writerCorOb = new PrintWriter("out/test_alpha_ob2.dat");
-        PrintWriter writerCor = new PrintWriter("out/test_alpha2.dat");
-        CoresetOblivious corOb = new CoresetOblivious(0.1, 1, wSize, k);
-        Coreset cor = new Coreset(0.1, 1, wSize, k, 0.0001, 1000);
-        reader = new DD_Reader("data/alpha.dat");
-        for(int tim = 0; tim < 90000 ; tim++){
-            if(tim%1000==0) System.out.println(tim);
+        PrintWriter writerCor = new PrintWriter("out/test_ddseq2.dat");
+        Coreset cor = new Coreset(0.1, 1, wSize, k, 0.001, 500);
+        CoresetOblivious coro = new CoresetOblivious(0.1, 1, wSize, k);
+        reader = new DD_Reader100("data/ddseq2.dat");
+        for(int tim = 0; tim < 3250000 ; tim++){
+            if(tim%10000==0) System.out.println(tim);
             Point p = reader.nextPoint();
             p.exitTime = tim + wSize;
             cor.update(p);
-            corOb.update(p);
+            coro.update(p);
 
             // space
             int tmp = 0;
@@ -38,25 +37,11 @@ public class MainDD
             for(Map<Point, Point> tmpM : cor.R)
                 tmp += tmpM.size()*2;
 
-            writerCor.println(tmp + " " + cor.minDist + " " + cor.maxDist);
-
-            // space
-            tmp = 0;
-            for(Set<Point> tmpQ : corOb.OV.values())
-                tmp += tmpQ.size();
-            for(Map<Point, Point> tmpM : corOb.RV.values())
-                tmp += tmpM.size()*2;
-            for(Set<Point> tmpQ : corOb.O.values())
-                tmp += tmpQ.size();
-            for(Map<Point, Point> tmpM : corOb.R.values())
-                tmp += tmpM.size()*2;
-
-            writerCorOb.println(tmp+ " " + corOb.r_t/2 + " " + corOb.M_t*2/corOb.delta + " " + corOb.OV.size());
+            writerCor.println(tmp + " "+ coro.r_t + " " + coro.M_t);
 
 
         }
         writerCor.close();
-        writerCorOb.close();
         reader.close();
     }
 

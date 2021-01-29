@@ -13,25 +13,25 @@ public class MainDiameter
     static double INF = 10e20;
     static int wSize = -1;
     static int stride = 10000;
-    static int[] sizesw = new int[]{100, 1000, 3000, 10000, 30000, 100000, 300000, 1000000};
+    static int[] sizesw = new int[]{100, 1000, 3000, 10000, 30000, 100000, 300000};//, 1000000};
     public static void main(String[] args) throws Exception
     {
 
-        PrintWriter writerCoh = new PrintWriter("test_diam_h_coh.dat");
-        PrintWriter writerCorc = new PrintWriter("test_diam_h_corc.dat");
-        PrintWriter writerCora = new PrintWriter("test_diam_h_cora.dat");
-        PrintWriter writerSeq = new PrintWriter("test_diam_h_seq.dat");
+        PrintWriter writerCoh = new PrintWriter("out/test_diam_c_coh2.dat");
+        PrintWriter writerCora = new PrintWriter("out/test_diam_c_cor2.dat");
+        PrintWriter writerSeq = new PrintWriter("out/test_diam_c_seq2.dat");
 
         for(int ii=0; ii < sizesw.length; ii++){
-            reader = new HIGGS_Reader("data/HIGGS.csv");
+            reader = new Cover_Reader("data/covtype.dat");
             wSize = sizesw[ii];
             long startTime, endTime;
 
-            Diameter coh = new Diameter(0.01, wSize);
-            CoresetDiameter cor = new CoresetDiameter(0.1, 0.5, wSize);
+            Diameter coh = new Diameter(0.001, wSize);
+            CoresetDiameter cor = new CoresetDiameter(1, 1, wSize);
             ArrayList<Point> deb_win = new ArrayList<>();
             for(int tim = 0; tim < wSize+stride ; tim++){
                 Point p = reader.nextPoint();
+                if(tim%1000==0) System.out.println(tim);
                 p.exitTime = tim + wSize;
                 //debug window
                 startTime = System.nanoTime();
@@ -60,7 +60,7 @@ public class MainDiameter
                 startTime = System.nanoTime();
                 cor.update(p);
                 endTime = System.nanoTime();
-                writerCorc.print( (endTime - startTime) + " " );
+                //writerCorc.print( (endTime - startTime) + " " );
                 writerCora.print( (endTime - startTime) + " " );
 
                 //benchmarks CSS q
@@ -68,12 +68,6 @@ public class MainDiameter
                 ArrayList<Point> centersCSS = coh.queryPoints();
                 endTime = System.nanoTime();
                 writerCoh.print( (endTime - startTime) + " " );
-
-                //benchmarks ours q complete
-                startTime = System.nanoTime();
-                ArrayList<Point> centersCorComp = cor.query();
-                endTime = System.nanoTime();
-                writerCorc.print( (endTime - startTime) + " " );
 
                 //benchmarks ours q complete
                 startTime = System.nanoTime();
@@ -94,7 +88,6 @@ public class MainDiameter
                 tmp += coh.q.size();
                 tmp += coh.r.size();
                 writerCoh.print(tmp + " ");
-
                 //space of ours
                 tmp = 0;
                 for(Set<Point> tmpQ : cor.cor.OV.values())
@@ -105,24 +98,20 @@ public class MainDiameter
                     tmp += tmpQ.size();
                 for(Map<Point, Point> tmpM : cor.cor.R.values())
                     tmp += tmpM.size()*2;
-                writerCorc.print(tmp + " ");
                 writerCora.print(tmp + " ");
 
                 writerSeq.print(deb_win.size() + " ");
 
                 writerCoh.println(centersCSS.get(0).distance(centersCSS.get(1)));
-                writerCorc.println(centersCorComp.get(0).distance(centersCorComp.get(1)));
                 writerCora.println(centersCorAppr.get(0).distance(centersCorAppr.get(1)));
                 writerSeq.println(centersSeq.get(0).distance(centersSeq.get(1))) ;
             }
             writerCoh.flush();
-            writerCorc.flush();
             writerSeq.flush();
             writerCora.flush();
             System.out.println("done "+ii);
         }
         writerCoh.close();
-        writerCorc.close();
         writerSeq.close();
         writerCora.close();
 
