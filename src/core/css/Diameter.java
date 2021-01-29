@@ -41,11 +41,15 @@ public class Diameter
 
     public void update(Point p)
     {
-        if(last == null){
-            last = p;
+        if(pt2 == null){
+            pt2 = p;
             return;
         }
-        double r_t = last.distance(p)+1e-9;
+		if(pt1 == null){
+			pt1 = p;
+			return;
+		}
+        double r_t = pt1.distance(p)+1e-9;
         // update lower bound
         ArrayList<Integer> gams = new ArrayList<>();
         for(Integer gam : q.keySet())
@@ -61,10 +65,10 @@ public class Diameter
         if(!q.isEmpty()){
             int low = q.firstKey() -1;
             while(low >= (int)Math.floor(Math.log(r_t)/Math.log(1+eps)) ){
-                cold.put(low, last);
-                r.put(low, last);
-                q.put(low, last);
-                cnew.put(low, p);
+                cold.put(low, pt2);
+                r.put(low, pt2);
+                q.put(low, pt2);
+                cnew.put(low, pt1);
                 low--;
             }
         }
@@ -72,10 +76,9 @@ public class Diameter
 
         // add p for each gamma
         int i = (int)Math.floor(Math.log(r_t)/Math.log(1+eps));
-        double M_t = Double.POSITIVE_INFINITY;
+        double M_t = 3*(1+eps)*r_t;
         while(true){
             double gamma = Math.pow(1+eps, i);
-
             // reached upper bound, cleanup and exit
             if(gamma > M_t){
                 for(int j = i; j <= q.lastKey(); j++){
@@ -89,9 +92,9 @@ public class Diameter
 
             // need to rebuild if implicitly stored
             if(q.isEmpty() || i > q.lastKey()){
-                cold.put(i, last);
-                r.put(i, last);
-                q.put(i, last);
+                cold.put(i, pt2);
+                r.put(i, pt2);
+                q.put(i, pt2);
                 cnew.put(i, null);
             }
 
@@ -147,19 +150,20 @@ public class Diameter
             r.put(i, p);
 
             if(cnew.get(i) != null){ // diameter <= 3*gamma
-                M_t = 3*gamma;
+                M_t = 3*gamma*(1+eps);
             }
 
             i++;
         }
 
-        last = p;
+        pt2 = pt1;
+		pt1 = p;
         step++;
     }
 
 
     public TreeMap<Integer, Point> cold, cnew, q, r;
-    Point last;
+    Point pt2, pt1;
     int step = 0, wSize;
     double eps;
     int iters;
