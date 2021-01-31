@@ -1,7 +1,9 @@
-data
 out
 tmp_files
 imgs
 
 *.class
 *.m
+
+ddseq2.dat
+HIGGS.csv
